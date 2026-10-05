@@ -4,6 +4,7 @@ set -u
 
 SERVER=${1:-x1y2z5d6.yc.ftc.ru}
 TIMEOUT=${CURL_TIMEOUT:-5}
+CHECK_LLM=${CHECK_LLM:-0}
 failed=0
 
 printf 'Checking CTF services on %s\n\n' "$SERVER"
@@ -52,6 +53,7 @@ while IFS='|' read -r port service path kind; do
     case "$kind" in
         http) check_http "$port" "$service" "$path" ;;
         tcp)  check_tcp  "$port" "$service" "$path" ;;
+        llm)  [ "$CHECK_LLM" = "1" ] && check_http "$port" "$service" "$path" ;;
     esac
 done <<'SERVICES'
 5010|BrokenAccess Super_file|/|http
@@ -82,9 +84,9 @@ done <<'SERVICES'
 25000|Secure bank exploit|/|http
 25001|Secure bank vuln app|/|http
 25002|Secure bank bot|/stats|http
-8001|LeakBox level 1|/health|http
-8002|LeakBox level 2|/health|http
-8003|LeakBox level 3|/health|http
+8001|LeakBox level 1|/health|llm
+8002|LeakBox level 2|/health|llm
+8003|LeakBox level 3|/health|llm
 SERVICES
 
 printf '\nResult: %s\n' "$([ "$failed" -eq 0 ] && printf 'all services are reachable' || printf '%s service(s) failed' "$failed")"
