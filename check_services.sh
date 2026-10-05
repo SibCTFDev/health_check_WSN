@@ -78,6 +78,7 @@ done <<'SERVICES'
 5045|Client XSS|/|http
 5046|Client CSRF|/|http
 5047|Client Catch Me|/|http
+3000|Client XSS ticket|/|http
 25000|Secure bank exploit|/|http
 25001|Secure bank vuln app|/|http
 25002|Secure bank bot|/stats|http
