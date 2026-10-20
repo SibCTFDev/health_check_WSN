@@ -47,8 +47,7 @@ check_tcp() {
     fi
 }
 
-# Порты и пути соответствуют шести compose-файлам из run.sh.
-# Сервисы из других compose-файлов репозитория намеренно не проверяются.
+# Порты и пути соответствуют опубликованным маршрутам CTF_Tasks_WEBSN.
 while IFS='|' read -r port service path kind; do
     case "$kind" in
         http) check_http "$port" "$service" "$path" ;;
@@ -84,6 +83,15 @@ done <<'SERVICES'
 25000|Secure bank exploit|/|http
 25001|Secure bank vuln app|/|http
 25002|Secure bank bot|/stats|http
+33300|Client-side portal|/|http
+33301|Client-side Customer|/|http
+33302|Client-side Username Generator|/|http
+33303|Client-side Pasteurize|/|http
+33304|Client-side Cookie World Order|/|http
+33305|Client-side Babier CSP|/|http
+33390|Username Generator admin bot|/|http
+33399|Client-side admin bot|/|http
+5088|Crypto JWT|/|http
 8001|LeakBox level 1|/health|llm
 8002|LeakBox level 2|/health|llm
 8003|LeakBox level 3|/health|llm

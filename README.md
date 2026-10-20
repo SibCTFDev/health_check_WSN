@@ -1,18 +1,19 @@
 # CTF service health check
 
-Скрипт `check_services.sh` запускается на Mac и проверяет доступность сервисов
-на удалённом CTF-сервере через `curl`.
+Скрипты `check_services_main.sh` и `check_services_test.sh` запускаются на Mac
+и проверяют доступность сервисов на удалённых CTF-серверах через `curl`.
 
 ## Запуск
 
 ```sh
-./check_services.sh
-./check_services.sh x1y2z5d6.yc.ftc.ru
-CURL_TIMEOUT=10 ./check_services.sh x1y2z5d6.yc.ftc.ru
+./check_services_main.sh
+./check_services_test.sh
+CURL_TIMEOUT=10 ./check_services_test.sh x1y2z5d6.yc.ftc.ru
 ```
 
-По умолчанию используется сервер `x1y2z5d6.yc.ftc.ru`. Для работы нужны только
-`curl` и SSH-доступ к серверу.
+По умолчанию `check_services_main.sh` использует `sectasks.yc.ftc.ru`, а
+`check_services_test.sh` — `x1y2z5d6.yc.ftc.ru`. Для работы нужны только `curl`
+и сетевой доступ к серверу.
 
 AI-таски LeakBox по умолчанию не проверяются. Чтобы добавить их в проверку,
 запусти скрипт с `CHECK_LLM=1`.
@@ -25,21 +26,23 @@ HTTP-проверка считает сервис доступным при лю
 
 ## Проверяемые группы
 
-Проверяются только семь compose-групп, которые запускаются основным
-`run.sh` проекта `CTF_Tasks_WEBSN`. Остальные дополнительные compose-файлы,
-старые проекты Docker и `mobile-backend` в проверку не входят.
+Проверяются опубликованные маршруты compose-групп, которые запускаются основным
+`run.sh` проекта `CTF_Tasks_WEBSN`. Сервисы из старых проектов Docker и
+внутренние контейнеры без опубликованного маршрута в проверку не входят.
 
 | Группа | Порты | Проверяемые пути |
 |---|---:|---|
 | `XXE-FileUpload-SSRF` | `8031`, `8032`, `8033` | `/xml`, `/xml`, `/` |
 | `BrokenAccesControl` | `5010`, `6633`, `5011`, `8082`, `6676`, `6677` | `/`, `/check-header`, `/`, `/api/user/4`, `/`, `/` |
 | `ClientVulnerabilities` | `5041–5047`, `25000–25002` | `/`, `/`, `/login`, `/`, `/`, `/`, `/`, `/`, `/`, `/` |
-| `ClientVulnerabilities/xss-ticket-ctf` | `3000` | `/` |
+| `Client-side CTF` | `33300–33305`, `33390`, `33399` | `/` |
+| `XSS-ticket` | `3000` | `/` |
+| `Crypto JWT` | `5088` | `/` |
 | `LLM/leakbox` | `8001`, `8002`, `8003` | `/health` |
 | `SQLi` | `5001`, `5002`, `5003`, `5004` | `/static/swagger.json`, `/`, `/`, `/` |
 | `Vulnerabilities` | `8007`, `8081`, `8091`, `5069` | `/`, TCP, `/whats_time`, `/` |
 
-Всего в таблице 31 опубликованный порт; по умолчанию проверяются 28 портов,
+Всего в таблице 40 опубликованных портов; по умолчанию проверяются 37 портов,
 а `CHECK_LLM=1` добавляет ещё три AI-сервиса. Внутренний порт LeakBox `8080` и
 внутренний бот `xss-ticket-ctf` без опубликованного порта намеренно не
 проверяются с Mac.
